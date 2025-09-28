@@ -1,4 +1,4 @@
-import { Ship } from "./ship";
+// import { Ship } from "./ship.js";
 
 class Gameboard {
     constructor() {
@@ -14,8 +14,60 @@ class Gameboard {
             ['I1', 'I2', 'I3', 'I4', 'I5', 'I6', 'I7', 'I8', 'I9', 'I10'],
             ['J1', 'J2', 'J3', 'J4', 'J5', 'J6', 'J7', 'J8', 'J9', 'J10'],
         ];
-        this.filledSquares = [];
+        // squares the player's ships are in 
+        this.shipSquares = [];
+        // squares the opponent hit
+        this.hitSquares = [];
+        // squares the player targeted
+        this.targetedSquares = [];
     }
 
+    placeShip(arr) {
+        if (!Array.isArray(arr)) {
+            throw new Error('Parameter must be array!');
+        }
 
+        if (!(this.#isHorizontal(arr) || this.#isVertical(arr))) {
+            throw new Error('Ship is not placed correctly! Must be placed in consecutive rows or columns');
+        }
+
+        this.shipSquares.push(...arr);
+    }
+
+    #parseCoord(coord) {
+        const row = coord[0];
+        const col = parseInt(coord.slice(1));
+        return { row, col };
+    }
+
+    #isHorizontal(coords) {
+        const parsed = coords.map(this.#parseCoord);
+        const sameRow = parsed.every(cd => cd.row === parsed[0].row);
+        if (!sameRow) return false;
+
+        // checking consecutive cols
+        const cols = parsed.map(cd => cd.col).sort((a, b) => a -b);
+        for (let i = 1; i < cols.length; i++) {
+            if (cols[i] !== cols[i - 1] + 1) return false;
+        }
+
+        return true;
+    }
+
+    #isVertical(coords) {
+        const parsed = coords.map(this.#parseCoord);
+        const sameCol = parsed.every(cd = cd.col === parsed[0].col);
+        if (!sameCol) return false;
+
+        // checking consecutive rows
+        // convert row letters to ASCII numbers
+        const rows = parsed.map(cd => cd.row.charCodeAt(0)).sort((a, b) => a - b);
+        for (let i = 0; i < rows.length; i++) {
+            if (rows[i] !== rows[i - 1] + 1) return false;
+        }
+
+        return true;
+    }
 }
+
+console.log(new Gameboard());
