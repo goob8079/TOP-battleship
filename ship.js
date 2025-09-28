@@ -1,3 +1,5 @@
+export { Ship };
+
 class Ship {
     constructor(length) {
         this.length = length;
@@ -23,4 +25,3 @@ class Ship {
 }
 
 module.exports = { Ship };
-export { Ship };
