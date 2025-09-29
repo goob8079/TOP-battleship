@@ -23,6 +23,10 @@ class Gameboard {
     }
 
     placeShip(ship, arr) {
+        if (Object.keys(this.shipSquares).length >= 5) {
+            throw new Error('There can only be 5 ships on the board!');
+        }
+
         if (!(ship instanceof Ship)) {
             throw new Error('First parameter must be a ship')
         }
@@ -33,6 +37,18 @@ class Gameboard {
 
         if (!Array.isArray(arr)) {
             throw new Error('Parameter must be array!');
+        }
+
+        if (ship.length !== arr.length) {
+            throw new Error('Coordinates must correspond to ship length!');
+        }
+
+        // check if arr coords exist
+        for (let coord of arr) {
+            const exists = this.board.some(row => row.includes(coord));
+            if (!exists) {
+                throw new Error('Please enter a coordinate on the board!');
+            }
         }
 
         // flatten the occupied squares from every ship
@@ -50,6 +66,33 @@ class Gameboard {
 
         // add new key/value pair each time
         this.shipSquares[ship] = arr;
+    }
+
+    receiveAttack(coord) {
+        const exists = this.board.some(row => row.includes(coord));
+        if (!exists) {
+            throw new Error('Please enter a coordinate on the board!');
+        }
+
+        // check if any of the ships has the coord
+        for (const [ship, coords] of Object.entries(this.shipSquares)) {
+            if (coords.includes(coord)) {
+                this.hitSquares.push(coord);
+                this.targetedSquares.push(coord);
+
+                ship.hit();
+
+                if (ship.isSunk()) {
+                    console.log(`Ship of length ${ship.length} has been sunk`);
+                }
+
+                return true;
+            }
+        }
+
+        // if missed
+        this.targetedSquares.push(coord);
+        return false;
     }
 
     #parseCoord(coord) {
