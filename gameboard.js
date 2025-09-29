@@ -1,4 +1,4 @@
-// import { Ship } from "./ship.js";
+import { Ship } from "./ship.js";
 
 class Gameboard {
     constructor() {
@@ -15,21 +15,32 @@ class Gameboard {
             ['J1', 'J2', 'J3', 'J4', 'J5', 'J6', 'J7', 'J8', 'J9', 'J10'],
         ];
         // squares the player's ships are in 
-        this.shipSquares = [];
+        this.shipSquares = {};
         // squares the opponent hit
         this.hitSquares = [];
         // squares the player targeted
         this.targetedSquares = [];
     }
 
-    placeShip(arr) {
+    placeShip(ship, arr) {
+        if (!(ship instanceof Ship)) {
+            throw new Error('First parameter must be a ship')
+        }
+
+        if (ship.length > 5 || ship.length < 2) {
+            throw new Error('Ship must be within the lengths 2-5');
+        }
+
         if (!Array.isArray(arr)) {
             throw new Error('Parameter must be array!');
         }
 
-        for (let square of this.shipSquares) {
-            if (arr.includes(square)) {
-                throw new Error(`${square} is already occupied! Please place in another spot`);
+        // flatten the occupied squares from every ship
+        const occupiedSquares = Object.values(this.shipSquares).flat();
+
+        for (let square of arr) {
+            if (occupiedSquares.includes(square)) {
+                throw new Error(`${square} is already occupied!`);
             }
         }
 
@@ -37,7 +48,8 @@ class Gameboard {
             throw new Error('Ship is not placed correctly! Must be placed in consecutive rows or columns');
         }
 
-        this.shipSquares.push(...arr);
+        // add new key/value pair each time
+        this.shipSquares[ship] = arr;
     }
 
     #parseCoord(coord) {
@@ -77,3 +89,5 @@ class Gameboard {
 }
 
 console.log(new Gameboard());
+
+module.exports = { Gameboard };
