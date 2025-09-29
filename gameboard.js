@@ -27,6 +27,12 @@ class Gameboard {
             throw new Error('Parameter must be array!');
         }
 
+        for (let square of this.shipSquares) {
+            if (arr.includes(square)) {
+                throw new Error(`${square} is already occupied! Please place in another spot`);
+            }
+        }
+
         if (!(this.#isHorizontal(arr) || this.#isVertical(arr))) {
             throw new Error('Ship is not placed correctly! Must be placed in consecutive rows or columns');
         }
