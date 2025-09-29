@@ -73,7 +73,7 @@ class Gameboard {
         if (!exists) {
             throw new Error('Please enter a coordinate on the board!');
         }
-
+        
         // check if any of the ships has the coord
         for (const [ship, coords] of Object.entries(this.shipSquares)) {
             if (coords.includes(coord)) {
@@ -93,6 +93,10 @@ class Gameboard {
         // if missed
         this.targetedSquares.push(coord);
         return false;
+    }
+
+    checkIfAllSunk() {
+        return this.shipSquares.every(ship => ship.isSunk());
     }
 
     #parseCoord(coord) {
