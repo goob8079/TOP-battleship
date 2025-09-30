@@ -15,15 +15,15 @@ class Gameboard {
             ['J1', 'J2', 'J3', 'J4', 'J5', 'J6', 'J7', 'J8', 'J9', 'J10'],
         ];
         // squares the player's ships are in 
-        this.shipSquares = {};
+        this.shipSquares = [];
         // squares the opponent hit
         this.hitSquares = [];
         // squares the player targeted
         this.targetedSquares = [];
     }
 
-    placeShip(ship, arr) {
-        if (Object.keys(this.shipSquares).length >= 5) {
+    placeShip(ship, coords) {
+        if (this.shipSquares.length >= 5) {
             throw new Error('There can only be 5 ships on the board!');
         }
 
@@ -35,7 +35,7 @@ class Gameboard {
             throw new Error('Ship must be within the lengths 2-5');
         }
 
-        if (!Array.isArray(arr)) {
+        if (!Array.isArray(coords)) {
             throw new Error('Parameter must be array!');
         }
 
@@ -43,8 +43,8 @@ class Gameboard {
             throw new Error('Coordinates must correspond to ship length!');
         }
 
-        // check if arr coords exist
-        for (let coord of arr) {
+        // check if coords coords exist
+        for (let coord of coords) {
             const exists = this.board.some(row => row.includes(coord));
             if (!exists) {
                 throw new Error('Please enter a coordinate on the board!');
@@ -52,20 +52,19 @@ class Gameboard {
         }
 
         // flatten the occupied squares from every ship
-        const occupiedSquares = Object.values(this.shipSquares).flat();
-
-        for (let square of arr) {
+        const occupiedSquares = this.shipSquares.flatMap(s => s.coords);
+        for (let square of coords) {
             if (occupiedSquares.includes(square)) {
                 throw new Error(`${square} is already occupied!`);
             }
         }
 
-        if (!(this.#isHorizontal(arr) || this.#isVertical(arr))) {
+        if (!(this.#isHorizontal(coords) || this.#isVertical(coords))) {
             throw new Error('Ship is not placed correctly! Must be placed in consecutive rows or columns');
         }
 
         // add new key/value pair each time
-        this.shipSquares[ship] = arr;
+        this.shipSquares.push({ ship, coords });
     }
 
     receiveAttack(coord) {
@@ -75,7 +74,7 @@ class Gameboard {
         }
         
         // check if any of the ships has the coord
-        for (const [ship, coords] of Object.entries(this.shipSquares)) {
+        for (const { ship, coords } of this.shipSquares) {
             if (coords.includes(coord)) {
                 this.hitSquares.push(coord);
                 this.targetedSquares.push(coord);
@@ -85,6 +84,11 @@ class Gameboard {
                 if (ship.isSunk()) {
                     console.log(`Ship of length ${ship.length} has been sunk`);
                 }
+                
+                // destructure shipSquares to pull out the .ship property
+                // then check if all ships are sunk
+                const checkIfAllSunk = this.shipSquares.every(( { ship }) => ship.isSunk());
+                if (checkIfAllSunk) return 'All sunk';
 
                 return true;
             }
@@ -93,10 +97,6 @@ class Gameboard {
         // if missed
         this.targetedSquares.push(coord);
         return false;
-    }
-
-    checkIfAllSunk() {
-        return this.shipSquares.every(ship => ship.isSunk());
     }
 
     #parseCoord(coord) {
