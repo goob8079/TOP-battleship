@@ -86,6 +86,7 @@ class Gameboard {
                 }
                 
                 // destructure shipSquares to pull out the .ship property
+                // since the items inside shipSquares looks like - { ship: <Ship instance>, coords: [...] }
                 // then check if all ships are sunk
                 const checkIfAllSunk = this.shipSquares.every(( { ship }) => ship.isSunk());
                 if (checkIfAllSunk) return 'All sunk';
