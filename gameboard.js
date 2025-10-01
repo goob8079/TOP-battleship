@@ -1,4 +1,5 @@
 import { Ship } from "./ship.js";
+export { Gameboard }
 
 class Gameboard {
     constructor() {
@@ -39,7 +40,7 @@ class Gameboard {
             throw new Error('Parameter must be array!');
         }
 
-        if (ship.length !== arr.length) {
+        if (ship.length !== coords.length) {
             throw new Error('Coordinates must correspond to ship length!');
         }
 
@@ -60,7 +61,7 @@ class Gameboard {
         }
 
         if (!(this.#isHorizontal(coords) || this.#isVertical(coords))) {
-            throw new Error('Ship is not placed correctly! Must be placed in consecutive rows or columns');
+            throw new Error(`Ship of length ${ship.length} is not placed correctly! Must be placed in consecutive rows or columns`);
         }
 
         // add new key/value pair each time
@@ -88,9 +89,10 @@ class Gameboard {
                 // destructure shipSquares to pull out the .ship property
                 // since the items inside shipSquares looks like - { ship: <Ship instance>, coords: [...] }
                 // then check if all ships are sunk
-                const checkIfAllSunk = this.shipSquares.every(( { ship }) => ship.isSunk());
+                const checkIfAllSunk = this.shipSquares.every(({ ship }) => ship.isSunk());
                 if (checkIfAllSunk) return 'All sunk';
 
+                // if hit
                 return true;
             }
         }
@@ -101,8 +103,22 @@ class Gameboard {
     }
 
     #parseCoord(coord) {
-        const row = coord[0];
-        const col = parseInt(coord.slice(1));
+        if (typeof coord !== 'string' || coord.length < 2) {
+            throw new Error('Invalid coordinate input');
+        }
+
+        coord = coord.trim();
+        const row = coord[0].toUpperCase();
+        const col = parseInt(coord.slice(1), 10);
+
+        if (isNaN(col) || col < 1 || col > 10) {
+            throw new Error('Column must be between 1 and 10');
+        }
+
+        if (row < 'A' || row > 'J') {
+            throw new Error('Row must be between A and J');
+        }
+
         return { row, col };
     }
 
@@ -122,20 +138,18 @@ class Gameboard {
 
     #isVertical(coords) {
         const parsed = coords.map(this.#parseCoord);
-        const sameCol = parsed.every(cd = cd.col === parsed[0].col);
+        const sameCol = parsed.every(cd => cd.col === parsed[0].col);
         if (!sameCol) return false;
 
         // checking consecutive rows
         // convert row letters to ASCII numbers
         const rows = parsed.map(cd => cd.row.charCodeAt(0)).sort((a, b) => a - b);
-        for (let i = 0; i < rows.length; i++) {
+        for (let i = 1; i < rows.length; i++) {
             if (rows[i] !== rows[i - 1] + 1) return false;
         }
 
         return true;
     }
 }
-
-console.log(new Gameboard());
 
 module.exports = { Gameboard };
