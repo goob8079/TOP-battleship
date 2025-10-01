@@ -32,13 +32,54 @@ describe('Gameboard tests', () => {
             ).toThrow('Ship must be within the lengths 2-5');
         });
 
-        test('Coords correspond to ship length', () => {
+        test('Coords must correspond to ship length', () => {
             const gameboard = new Gameboard();
             const ship1 = new Ship(3);
 
             expect(
                 () => gameboard.placeShip(ship1, ['A1', 'A2'])
             ).toThrow('Coordinates must correspond to ship length!');
+        });
+
+        test('Prevents coords from being off the board', () => {
+            const gameboard = new Gameboard();
+            const ship1 = new Ship(2);
+
+            expect(
+                () => gameboard.placeShip(ship1, ['Z1', 'Z2'])
+            ).toThrow('Please enter a coordinate on the board!')
+        });
+
+        // this test also checks the automatic capitilization feature for coords
+        test('Preoccupied coords/squares', () => {
+            const gameboard = new Gameboard();
+            const ship1 = new Ship(2);
+            const ship2 = new Ship(3);
+            gameboard.placeShip(ship1, ['a1', 'a2']);
+
+            expect(
+                () => gameboard.placeShip(ship2, ['a2', 'a3', 'a4'])
+            ).toThrow(/is already occupied!/);
+        });
+
+        test('Placing a ship diagonally', () => {
+            const gameboard = new Gameboard();
+            const ship1 = new Ship(2);
+        
+            expect(
+                () => gameboard.placeShip(ship1, ['A1', 'b2'])
+            ).toThrow(/is not placed correctly!/);
+        });
+
+        test('Ship is pushed to shipSquares correctly', () => {
+            const gameboard = new Gameboard();
+            const ship1 = new Ship(2);
+            gameboard.placeShip(ship1, ['a1', 'a2']);
+
+            
+            expect(gameboard.shipSquares[0].ship).toBeInstanceOf(Ship);
+            expect(gameboard.shipSquares[0].ship).toEqual({hits: 0, length: 2, sunk: false});
+            expect(gameboard.shipSquares[0].coords).toEqual(['A1', 'A2']);
         });
     });
     

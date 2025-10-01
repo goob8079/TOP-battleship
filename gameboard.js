@@ -1,5 +1,4 @@
 import { Ship } from "./ship.js";
-export { Gameboard }
 
 class Gameboard {
     constructor() {
@@ -22,28 +21,31 @@ class Gameboard {
         // squares the player targeted
         this.targetedSquares = [];
     }
-
+    
     placeShip(ship, coords) {
         if (this.shipSquares.length >= 5) {
             throw new Error('There can only be 5 ships on the board!');
         }
-
+        
         if (!(ship instanceof Ship)) {
             throw new Error('First parameter must be a ship')
         }
-
+        
         if (ship.length > 5 || ship.length < 2) {
             throw new Error('Ship must be within the lengths 2-5');
         }
-
+        
         if (!Array.isArray(coords)) {
             throw new Error('Parameter must be array!');
         }
-
+        
         if (ship.length !== coords.length) {
             throw new Error('Coordinates must correspond to ship length!');
         }
-
+        
+        // makes coords automatically uppercase
+        coords = coords.map(cd => cd.trim().toUpperCase());
+        
         // check if coords coords exist
         for (let coord of coords) {
             const exists = this.board.some(row => row.includes(coord));
@@ -51,7 +53,7 @@ class Gameboard {
                 throw new Error('Please enter a coordinate on the board!');
             }
         }
-
+        
         // flatten the occupied squares from every ship
         const occupiedSquares = this.shipSquares.flatMap(s => s.coords);
         for (let square of coords) {
@@ -59,15 +61,15 @@ class Gameboard {
                 throw new Error(`${square} is already occupied!`);
             }
         }
-
+        
         if (!(this.#isHorizontal(coords) || this.#isVertical(coords))) {
             throw new Error(`Ship of length ${ship.length} is not placed correctly! Must be placed in consecutive rows or columns`);
         }
-
+        
         // add new key/value pair each time
         this.shipSquares.push({ ship, coords });
     }
-
+    
     receiveAttack(coord) {
         const exists = this.board.some(row => row.includes(coord));
         if (!exists) {
@@ -79,9 +81,9 @@ class Gameboard {
             if (coords.includes(coord)) {
                 this.hitSquares.push(coord);
                 this.targetedSquares.push(coord);
-
+                
                 ship.hit();
-
+                
                 if (ship.isSunk()) {
                     console.log(`Ship of length ${ship.length} has been sunk`);
                 }
@@ -91,65 +93,65 @@ class Gameboard {
                 // then check if all ships are sunk
                 const checkIfAllSunk = this.shipSquares.every(({ ship }) => ship.isSunk());
                 if (checkIfAllSunk) return 'All sunk';
-
+                
                 // if hit
                 return true;
             }
         }
-
+        
         // if missed
         this.targetedSquares.push(coord);
         return false;
     }
-
+    
     #parseCoord(coord) {
         if (typeof coord !== 'string' || coord.length < 2) {
             throw new Error('Invalid coordinate input');
         }
-
+        
         coord = coord.trim();
         const row = coord[0].toUpperCase();
         const col = parseInt(coord.slice(1), 10);
-
+        
         if (isNaN(col) || col < 1 || col > 10) {
             throw new Error('Column must be between 1 and 10');
         }
-
+        
         if (row < 'A' || row > 'J') {
             throw new Error('Row must be between A and J');
         }
-
+        
         return { row, col };
     }
-
+    
     #isHorizontal(coords) {
         const parsed = coords.map(this.#parseCoord);
         const sameRow = parsed.every(cd => cd.row === parsed[0].row);
         if (!sameRow) return false;
-
+        
         // checking consecutive cols
         const cols = parsed.map(cd => cd.col).sort((a, b) => a -b);
         for (let i = 1; i < cols.length; i++) {
             if (cols[i] !== cols[i - 1] + 1) return false;
         }
-
+        
         return true;
     }
-
+    
     #isVertical(coords) {
         const parsed = coords.map(this.#parseCoord);
         const sameCol = parsed.every(cd => cd.col === parsed[0].col);
         if (!sameCol) return false;
-
+        
         // checking consecutive rows
         // convert row letters to ASCII numbers
         const rows = parsed.map(cd => cd.row.charCodeAt(0)).sort((a, b) => a - b);
         for (let i = 1; i < rows.length; i++) {
             if (rows[i] !== rows[i - 1] + 1) return false;
         }
-
+        
         return true;
     }
 }
 
-module.exports = { Gameboard };
+export { Gameboard }

@@ -1,12 +1,10 @@
-export { Ship };
-
 class Ship {
     constructor(length) {
         this.length = length;
         this.hits = 0;
         this.sunk = false;
     }
-
+    
     hit() {
         if (this.hits === this.length) {
             return;
@@ -24,4 +22,4 @@ class Ship {
     }
 }
 
-module.exports = { Ship };
+export { Ship };
