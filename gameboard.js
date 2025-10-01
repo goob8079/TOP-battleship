@@ -71,6 +71,8 @@ class Gameboard {
     }
     
     receiveAttack(coord) {
+        coord = coord.trim().toUpperCase();
+
         const exists = this.board.some(row => row.includes(coord));
         if (!exists) {
             throw new Error('Please enter a coordinate on the board!');

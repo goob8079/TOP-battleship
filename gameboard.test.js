@@ -83,5 +83,36 @@ describe('Gameboard tests', () => {
         });
     });
     
-    
+    describe('receiveAttack tests', () => {
+        test('Attack hits ship', () => {
+            const gameboard = new Gameboard();
+            const ship1 = new Ship(2);
+            gameboard.placeShip(ship1, ['A1', 'A2']);
+
+            expect(gameboard.receiveAttack('A1')).toBe(true);
+        });
+
+        test('Attack misses ship', () => {
+            const gameboard = new Gameboard();
+            const ship1 = new Ship(2);
+            gameboard.placeShip(ship1, ['A1', 'A2']);
+
+            expect(gameboard.receiveAttack('A3')).toBe(false);
+        });
+
+        test('All ships sunk', () => {
+            const gameboard = new Gameboard();
+            const ship1 = new Ship(2);
+            const ship2 = new Ship(3);
+
+            gameboard.placeShip(ship1, ['A1', 'A2']);
+            gameboard.placeShip(ship2, ['b1', 'b2', 'b3']);
+            gameboard.receiveAttack('A1');
+            gameboard.receiveAttack('A2');
+            gameboard.receiveAttack('B1');
+            gameboard.receiveAttack('B2');
+
+            expect(gameboard.receiveAttack('B3')).toMatch(/All sunk/);
+        });
+    });
 });
