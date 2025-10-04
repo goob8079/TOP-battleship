@@ -6,13 +6,17 @@ class Player{
         this.name = name;
         this.gameboard = new Gameboard;
         this.cpu = false;
+        this.turn = false;
 
-        if (this.cpu) { 
-            this.#fillBoardRandomly();
-        }
+        // for CPU, keeps track of attacked coords
+        this.targetedCoords = new Set();
     }
 
-    #fillBoardRandomly() {
+    attack(opp, coord) {
+        return opp.gameboard.receiveAttack(coord);
+    }
+
+    fillBoardRandomly() {
         // ships and their lengths
         const ships = [
             {name: 'ship1', length: 2},
@@ -44,6 +48,18 @@ class Player{
                 }
             }
         }
+    }
+    
+    randomAttack(opp) {
+        let coord;
+        do {
+            const row = Math.floor(Math.random() * 10);
+            const col = Math.floor(Math.random() * 10);
+            // coord = `${String.fromCharCode(65 + row)}${col + 1}`;
+        } while (this.targetedCoords.has(coord)); // retries if already targeted a coord
+
+        this.targetedCoords.add(coord);
+        return opp.gameboard.receiveAttack(coord);
     }
 
     #canPlace(coords) {
