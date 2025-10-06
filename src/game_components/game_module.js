@@ -4,16 +4,16 @@ import { Ship } from "./ship.js";
 
 const gameArea = document.querySelector('.game-area');
 
-const game = gameController();
-
 function gameController() {
     const CPU = new Player('CPU');
     CPU.cpu = true;
     CPU.turn = true;
     CPU.fillBoardRandomly();
+    console.log(CPU.gameboard);
 
     const realPlayer = new Player('Real');
     realPlayer.fillBoardRandomly();
+    console.log(realPlayer.gameboard);
 
     DOMController(realPlayer, CPU, checkWinner);
 
@@ -22,7 +22,7 @@ function gameController() {
             return `${p2.name} wins!`;
         }
         
-        if (p2,gameboard.checkIfAllSunk()) {
+        if (p2.gameboard.checkIfAllSunk()) {
             return `${p1.name} wins!`;
         }
         
@@ -35,19 +35,21 @@ function gameController() {
 function DOMController(p1, p2, checkWinner) {
     const playerInput = document.createElement("input");
     playerInput.id = 'player-input';
-    gameArea.appendChild(input);
+    playerInput.placeholder = 'Enter coordinate, like A1';
+    gameArea.appendChild(playerInput);
 
     const attackBtn = document.createElement("button");
     attackBtn.id = 'attack-btn';
+    attackBtn.textContent = 'Attack';
     gameArea.appendChild(attackBtn);
 
     attackBtn.addEventListener('click', () => {
         const coord = playerInput.value.trim().toUpperCase();
 
         try {
-            const p1Attack = p1.attack(opp, coord);
+            const p1Attack = p1.attack(p2, coord);
 
-            const winner = game.checkWinner(p1, p2);
+            const winner = checkWinner(p1, p2);
             if (winner) {
                 console.log(winner);
                 return;
@@ -59,6 +61,8 @@ function DOMController(p1, p2, checkWinner) {
             if (winner2) {
                 console.log(winner2);
             }
+
+            playerInput.textContent = '';
 
         } catch (err) {
             console.log(err.message);
