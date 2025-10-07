@@ -2,20 +2,14 @@ import { Gameboard } from "./gameboard.js";
 import { Player } from "./player.js";
 import { Ship } from "./ship.js";
 
-const gameArea = document.querySelector('.game-area');
-const p1Board = document.querySelector('#p1-board');
-const p2Board = document.querySelector('#p2-board');
-
 function gameController() {
     const CPU = new Player('CPU');
     CPU.cpu = true;
     CPU.turn = true;
     CPU.fillBoardRandomly();
-    console.log(CPU.gameboard);
 
     const realPlayer = new Player('Real');
     realPlayer.fillBoardRandomly();
-    console.log(realPlayer.gameboard);
 
     DOMController(realPlayer, CPU, checkWinner);
 
@@ -35,6 +29,10 @@ function gameController() {
 }
 
 function DOMController(p1, p2, checkWinner) {
+    const gameArea = document.querySelector('.game-area');
+    const p1Board = document.querySelector('#p1-board');
+    const p2Board = document.querySelector('#p2-board');
+    
     const playerInput = document.createElement("input");
     playerInput.id = 'player-input';
     playerInput.placeholder = 'Enter coordinate, like A1';
@@ -44,12 +42,17 @@ function DOMController(p1, p2, checkWinner) {
     attackBtn.id = 'attack-btn';
     attackBtn.textContent = 'Attack';
     gameArea.appendChild(attackBtn);
+    
+    renderBoard(p1Board, p1.gameboard);
+    renderBoard(p2Board, p2.gameboard, true);
 
     attackBtn.addEventListener('click', () => {
         const coord = playerInput.value.trim().toUpperCase();
+        renderBoard(p2Board, p2.gameboard, true);
 
         try {
             const p1Attack = p1.attack(p2, coord);
+            renderBoard
 
             const winner = checkWinner(p1, p2);
             if (winner) {
@@ -58,6 +61,7 @@ function DOMController(p1, p2, checkWinner) {
             }
 
             const p2Attack = p2.randomAttack(p1);
+            renderBoard(p1Board, p1.gameboard);
 
             const winner2 = checkWinner(p1, p2);
             if (winner2) {
