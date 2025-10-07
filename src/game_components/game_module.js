@@ -3,6 +3,8 @@ import { Player } from "./player.js";
 import { Ship } from "./ship.js";
 
 const gameArea = document.querySelector('.game-area');
+const p1Board = document.querySelector('#p1-board');
+const p2Board = document.querySelector('#p2-board');
 
 function gameController() {
     const CPU = new Player('CPU');
@@ -68,6 +70,33 @@ function DOMController(p1, p2, checkWinner) {
             console.log(err.message);
         }
     });
+}
+
+function renderBoard(boardElem, gameboard, hideShips = false) {
+    boardElem.innerHTML = '';
+
+    for (let i = 0; i < gameboard.board.length; i++) {
+        for (let j = 0; j < gameboard.board[i].length; j++) {
+            const coord = gameboard.board[i][j];
+            const cell = document.createElement('div');
+            cell.classList.add('cell');
+            cell.dataset.coord = coord;
+
+            // ships for player's board
+            if (!hideShips && gameboard.shipSquares.some(sq => sq.coords.includes(coord))) {
+                cell.classList.add('ship');
+            }
+
+            // track hits and misses
+            if (gameboard.hitSquares.includes(coord)) {
+                cell.classList.add('hit');
+            } else if (gameboard.targetedSquares.includes(coord)) {
+                cell.classList.add('miss');
+            }
+
+            boardElem.appendChild(cell);
+        }
+    }
 }
 
 export { gameController }
