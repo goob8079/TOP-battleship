@@ -41,7 +41,7 @@ function DOMController(p1, p2, checkWinner) {
         const coord = e.target.dataset.coord;
 
         // prevent attacked squares from being pressed more than once
-        if (p1.gameboard.targetedSquares.includes(coord) || p2.gameboard.targetedSquares.includes(coord)){ 
+        if (p2.gameboard.targetedSquares.includes(coord)){ 
             return;
         }
 
