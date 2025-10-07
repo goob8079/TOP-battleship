@@ -33,45 +33,28 @@ function DOMController(p1, p2, checkWinner) {
     const p1Board = document.querySelector('#p1-board');
     const p2Board = document.querySelector('#p2-board');
     
-    const playerInput = document.createElement("input");
-    playerInput.id = 'player-input';
-    playerInput.placeholder = 'Enter coordinate, like A1';
-    gameArea.appendChild(playerInput);
-
-    const attackBtn = document.createElement("button");
-    attackBtn.id = 'attack-btn';
-    attackBtn.textContent = 'Attack';
-    gameArea.appendChild(attackBtn);
-    
     renderBoard(p1Board, p1.gameboard);
     renderBoard(p2Board, p2.gameboard, true);
 
-    attackBtn.addEventListener('click', () => {
-        const coord = playerInput.value.trim().toUpperCase();
+    p2Board.addEventListener('click', (e) => {
+        if (!e.target.classList.contains('cell')) return;
+        const coord = e.target.dataset.coord;
+        
+        p1.attack(p2, coord);
         renderBoard(p2Board, p2.gameboard, true);
 
-        try {
-            const p1Attack = p1.attack(p2, coord);
-            renderBoard
+        const winner = checkWinner(p1, p2);
+        if (winner) {
+            console.log(winner);
+            return;
+        }
 
-            const winner = checkWinner(p1, p2);
-            if (winner) {
-                console.log(winner);
-                return;
-            }
+        p2.randomAttack(p1);
+        renderBoard(p1Board, p1.gameboard);
 
-            const p2Attack = p2.randomAttack(p1);
-            renderBoard(p1Board, p1.gameboard);
-
-            const winner2 = checkWinner(p1, p2);
-            if (winner2) {
-                console.log(winner2);
-            }
-
-            playerInput.textContent = '';
-
-        } catch (err) {
-            console.log(err.message);
+        const winner2 = checkWinner(p1, p2);
+        if (winner2) {
+            console.log(winner2);
         }
     });
 }
