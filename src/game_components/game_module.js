@@ -39,7 +39,12 @@ function DOMController(p1, p2, checkWinner) {
     p2Board.addEventListener('click', (e) => {
         if (!e.target.classList.contains('cell')) return;
         const coord = e.target.dataset.coord;
-        
+
+        // prevent attacked squares from being pressed more than once
+        if (p1.gameboard.targetedSquares.includes(coord) || p2.gameboard.targetedSquares.includes(coord)){ 
+            return;
+        }
+
         p1.attack(p2, coord);
         renderBoard(p2Board, p2.gameboard, true);
 
