@@ -14,9 +14,9 @@ Current features include:<br>
     </ol>
   </li>
   <li>
-    Frameworks:
+    Tools
     <ol>
-      <li>Node.js</li>
+      <li>Webpack</li>
     </ol>
   </li>
 </ol>
